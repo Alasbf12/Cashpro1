@@ -1,0 +1,24 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Frai de compte</title>
+</head>
+<body>
+	<div>
+		{% for element in all_account %}
+		{%if element.acc_fees == 'Pending'%}
+		<article>
+			<h2><span>{{element.id}} </span> {{element.user.username}}   {{element.firstname}}<form method ="POST" action="conf_frai_compte">
+				{%csrf_token%}
+			 <input type="hidden" name="username" value="{{element.user.username}}">
+			 <input type="checkbox" name="checkbox" required>
+			 <input type="submit" name="submit" value="Confirmer"></form> </h2>
+			
+		</article>
+		{% endif%}
+		{% endfor%}
+	</div>
+
+</body>
+</html>

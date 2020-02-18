@@ -1,0 +1,30 @@
+{%load static%}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Payement</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'ligdi/dashboard/css/bootstrap/css/bootstrap.css' %}">
+</head>
+<body>
+	<div> 
+		{%for element in positions%}
+		{%if element.pos_state == False and element.versement.confirmation.conf_state == True%}
+		<pa><h2>{{element.id}} {{element.account}} {{element.retour.ret_amount}}</h2> </pa>
+		<form method="POST" action="conf_payement/">
+			{%csrf_token%}
+			<input type="hidden" name="position"  value="{{element.id}}" required>
+			<input type="hidden" name="pay_amount" value="{{element.retour.ret_amount}}">
+			<label>numero de transaction</label>
+			<input type="text" name="trans_id" required>
+			<input type="checkbox" name="checkbox" required>
+			<input type="submit" name="submit" value="Valider">
+		</form>
+		<br>
+
+		{%endif%}
+				<br>
+		{%endfor%}
+	</div>
+
+</body>
+</html>

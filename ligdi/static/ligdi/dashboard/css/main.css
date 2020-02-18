@@ -1,0 +1,30 @@
+* {
+box-sizing: border-box;
+}
+
+#page_full {
+background: #f2eaea;
+}
+
+#menu {
+	background: #200144;
+	max-width: 280px;
+
+	nav {
+	  a {
+			display: block;
+			color: white;
+			text-decoration: none;
+			padding: 15px 30px;
+
+			&.active {
+				background: #f2eaea;
+					}
+		}
+		}
+
+}
+
+body {
+	background: #f2eaea;
+}

@@ -1,0 +1,28 @@
+{%load static%}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Versement liste</title>
+</head>
+<body>
+
+	<div>
+		{% for element in vers%}
+		{% if element.confirmation.conf_state == False %}
+		<article>
+			<h3>{{element.id}} {{element.vers_date}} {{element.position}} {{element.vers_amount}} {{element.vers_compte}} {{element.vers_num}} {{element.vers_nom}} {{element.vers_tel}} {{element.vers_state}}</h3>
+			<div>
+			<form method="POST" action="conf_versement/">
+				{%csrf_token%}
+				<input type="checkbox" name="checkbox" required>
+				<input type="hidden" name="versement" value="{{element.id}}">
+				<input type="submit" name="submit" value="Valider">
+			</form>
+			</div>
+		</article>
+		{% endif%}
+		{%endfor%}
+	</div>
+
+</body>
+</html>

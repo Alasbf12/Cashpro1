@@ -1,0 +1,144 @@
+ {% load static%}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cashpro | Dashboard</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'ligdi/dashboard/css/bootstrap/css/bootstrap.css' %}">
+</head>
+<body>
+	<div id="page_full">
+
+		<header>
+			{% if data.m.account.acc_fees == 'notPaid'%}<h3 id="text3"> payer vos frais de compte pour pouvoir prendre des positions(1.000f au +226 02-52-99-89 pour un mois )</h3>
+			<div align="center">
+			<form method="POST" action="fees/" >
+				{% csrf_token %}
+		    		<input type="Text" name="vers_nom" value="Moi même">
+		    		<p></p>
+		    		<select name="vers_compte">
+		    			<option>Mobicash</option>
+		    			<option>Orange Money</option>
+		    		</select>
+		    		<p></p>
+		    		<input type="Text" name="vers_tel" value="Mon numéro">
+		    		<p></p>
+		    		<input type="text" name="vers_num" value="Num de Transaction">
+		    		<p></p>
+		    		<input type="hidden" name="account" value="{{data.m.account.id}}">
+		    		<p></p>
+		    		<input type="Submit" name="Submit" value="Valider">
+			</form>
+			<br>
+			</div>
+ {% endif %}
+ 		{% if data.m.account.acc_fees == 'Pending' %} 
+ 		<h4 id="text1" align="center"> En attente de verifications</h4>
+ 		{%endif%}
+		</header>
+
+
+	<section id="engage">
+		<br>
+		<h3 id="username">Bienvenue sur cashPro {{data.m.username}} </h3>
+
+		{% if data.m.account.acc_fees != 'notPaid'  and data.m.account.pos_en_cour == False and data.m.account.acc_fees != 'Pending'%}
+		<form  method="POST" action="engage/">
+			{%csrf_token  %}
+			<div id="eng_type">
+				<select id="eng_type_der" name="pack" required>
+					<option id="text1" disabled="disabled" selected="selected">Choisissez un pack</option>
+					<option id="text1">Standard</option>
+					<option id="text1">Bronze</option>
+					<option id="text1">Argent</option>
+					<option id="text1">Or</option>
+					<option id="text1">Diamand</option>
+					<option id="text1">Platinum</option>
+				</select>
+
+				<input type="hidden" name="username" value="{{ data.m.username }}">
+				<input type="Submit" name="Submit" value="S'engager" >
+			</div>
+		</form>
+		<div>
+			<h3 id="text2" align="center">Vos Positions ({{data.positions|length}})</h3>
+		</div>
+		{%endif%}
+	</section>
+
+	
+
+	<section id="Eng_list">
+		{%for element in data.positions %}
+		{%if element.pos_state == False %}
+		<article id="Eng_list_art">
+			<h4> Numéro de Positionnement :	<span class="text4"> {{element.id}} </span> pack: <span >{{element.pack}} ({{element.pack.pack_pos_amount}} F)</span></h4>
+			 {%if element.versement.vers_state == False %}
+			<h4> <span>Pour valider la Position, veuillez transferer au numéro +226 67826138 par orange money, Ou au +226 73453704 par Mobicash </span></h4>
+			{% endif %}
+			<h4>Montant positionnement {{element.pack.pack_name}}: <span>{{element.pack.pack_pos_amount}} F</span></h4>
+		    <h4>Frais de positionnement <span> {{element.pack.pack_pos_fee}} F</span></h4>
+		    <h4>Total :<span> {{element.pack.pack_pay_tot}} F</span></h4>
+		    	{%if element.versement.vers_state == True and element.versement.confirmation.conf_state == False %}
+		    	<h4>identifiant versement: <span>{{element.versement.id}}</span></h4>
+		    	<h4>Numéro de Payement: <span>{{element.versement.vers_num}}</span> du <span>{{element.versement.vers_date}}</span>  </h4>
+		    	<h4>Numéro utiliser pour le payement : <span>{{element.versement.vers_tel}} </span> ___{{element.versement.vers_nom}}___</h4>
+		    	<h4 id="text3">  votre Payement est en entente de confirmation si cela dure plus de 24h veuillez Contacter un administrateur </h4>
+		    	{% endif %}
+		    	{% if element.versement.confirmation.conf_state == True%}
+		    	<h3 align="center">Votre Payement à été  confirmé </h3>
+		    	<h4>Numéro de confirmation : {{element.versement.confirmation.id}}</h4>
+		    	<h4>Identifiant versement: <span>{{element.versement.id}}</span></h4>
+		    	<h4>Date de Positionnement : {{element.versement.vers_date}}</h4>
+		    	<h4>Montant attendu : {{element.retour.ret_amount}}</h3>
+		    	<h4>Date maximun de Retour sur Position:{{element.retour.ret_date_max}}</h4>
+		    	{%endif%}
+
+		    	{%if element.versement.vers_state == False%}
+		    		<form method="POST" action="versement/">
+		    		{% csrf_token %}
+		    		<input type="Text" name="vers_nom" value="Moi même">
+		    		<p></p>
+		    		<select name="vers_compte">
+		    			<option>Mobicash</option>
+		    			<option>Orange Money</option>
+		    		</select>
+		    		<p></p>
+		    		<input type="Text" name="vers_tel" value="Mon Numéro">
+		    		<p></p>
+		    		<input type="text" name="vers_num" value="Num de Transaction">
+		    		<p></p>
+		    		<input type="hidden" name="vers_amount" value="{{element.pack.pack_pay_tot}}">
+		    		<input type="hidden" name="position" value="{{element.id}}">
+		    		<p></p>
+		    		<input type="Submit" name="Submit" value="Valider">
+		    	</form>
+		    		{%endif%}
+		</article >
+
+		{%endif%}
+		<br/>
+		{% if element.pos_state == True%}
+		<article id="Eng_list_art1">
+
+			<h4> Num Position :	<span class="text4"> {{element.id}} </span> pack: <span >{{element.pack}} ({{element.pack.pack_pos_amount}} F)</span></h4>
+			<h4 align="center">Vous avez été payer pour cette position</h4>
+			<h4>Numéro de Retour : {{element.retour.id}}</h4>
+			<h4>Date du payement du retour :  {{element.versement.payement.pay_date}} </h4>
+			<h4>Compte de payement : {{element.account.phone}}</h4>
+			<h4>Montant de payement : {{element.retour.ret_amount}}</h4>
+			<h4>Numéro de la transaction :  {{element.versement.payement.pay_trans_num}}</h4>
+			<h4></h4>
+
+		</article >
+		{%endif%}
+		<br/>
+		{%endfor%}
+		
+	</section>
+
+
+		
+
+	</div>
+</body>
+</html>
